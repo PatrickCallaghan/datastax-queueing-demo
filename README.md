@@ -1,7 +1,7 @@
-Paging Demo
+Queueing Demo
 ====================
 
-NOTE - this example requires apache cassandra version > 2.0.8 and the cassandra-driver-core version > 2.0.2
+NOTE - this example requires DataStax Enterprise > 4.5.0 and the cassandra-driver-core version > 2.0.2
 
 ## Scenario
 
