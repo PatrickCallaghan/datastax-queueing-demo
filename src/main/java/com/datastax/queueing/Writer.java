@@ -43,7 +43,7 @@ public class Writer {
 			
 				//If difference in reader and writer is greater than maxJobSize - block
 				if (queueCount.difference() > maxJobSize){
-					sleep(100);
+					sleep(10);
 				}else{
 					
 					Job job = new Job (UUID.randomUUID(), issuers.get(new Double(Math.random() * issuers.size()).intValue()) + "-" + System.currentTimeMillis());
@@ -59,11 +59,10 @@ public class Writer {
 		}
 
 		timer.end();
-		logger.info("Queueing demo finished in " + timer.getTimeTakenSeconds() + " secs.");
 	}
 
 	private void sleepRandom() {
-		sleep(new Double(Math.random() * 200).intValue());
+		sleep(new Double(Math.random() * 20).intValue());
 	}
 
 	private void sleep(int i) {

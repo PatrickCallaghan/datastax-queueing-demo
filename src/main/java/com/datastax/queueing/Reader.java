@@ -39,12 +39,12 @@ public class Reader {
 				logger.info("Processing Job " + job.getId() + " from location " + queueCounts.getReaderCount() % maxQueueSize);
 				
 				//Process the job.
-				sleep(50);
+				sleep(10);
 				dao.updateReaderCount(queueCounts.getReaderCount() + 1);
 			}else{			
 				//If nothing in queue, sleep
 				logger.info("Waiting");
-				sleep(500);
+				sleep(50);
 			}
 			
 			if (queueCounts.getReaderCount()==jobsSize){
@@ -52,7 +52,6 @@ public class Reader {
 			}
 		}
 		timer.end();
-		logger.info("Credit Cards Load took " + timer.getTimeTakenSeconds() + " secs.");
 	}
 
 	private void sleep(int i) {
