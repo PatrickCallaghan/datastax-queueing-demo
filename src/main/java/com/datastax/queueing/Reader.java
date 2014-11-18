@@ -25,7 +25,7 @@ public class Reader {
 		
 		Timer timer = new Timer();
 		logger.info("Starting Queue Reader");
-		
+			
 		boolean finished = true;
 		
 		while (finished){
