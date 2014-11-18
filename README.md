@@ -1,12 +1,11 @@
 Queueing Demo
 ====================
 
-NOTE - this example requires DataStax Enterprise > 4.5.0 and the cassandra-driver-core version > 2.0.2
+NOTE - this example requires DataStax Enterprise > 4.5.0 or Cassandra > 2.0.5 and the cassandra-driver-core version > 2.0.2
 
 ## Scenario
 
-This demo shows how to create a queueing system in DataStax Enterprise. This demo utilises the in-memory feature to provide
-a set amount of space for the queue on the heap. 
+This demo shows how to create a queueing system in DataStax Enterprise or with leveled compaction in Cassandara. This demo utilises the in-memory feature in DSE to provide a set amount of space for the queue on the heap. 
 
 The queueing system is based around a circular buffer and is currently single threaded only. There is 2 separate main classes, the Writer and Reader. The default settings are that there are 1000 locations in the buffer. The max no of jobs in the queue at any time is 500.
 So if the Writer has written 500 more jobs than the reader has read, the writer will be blocked until the reader finishes the current job. Similarly, the if the reader catches up with the writer, the reader will wait until some more jobs have been written.
@@ -18,9 +17,14 @@ Note : This will drop the keyspace "datastax_queueing_demo" and create a new one
 
 To specify contact points use the contactPoints command line parameter e.g. '-DcontactPoints=192.168.25.100,192.168.25.101'
 The contact points can take mulitple points in the IP,IP,IP (no spaces).
+
 To create the a single node cluster with replication factor of 1 for standard localhost setup, run the following
 
     mvn clean compile exec:java -Dexec.mainClass="com.datastax.demo.SchemaSetup"
+
+NOTE : to do this with Cassandra rather than DSE, use the following cql file to created the table 
+
+	src/main/resources/cql/create_schema_levelled.cql
 
 To run the writer
 
