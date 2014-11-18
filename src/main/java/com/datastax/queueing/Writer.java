@@ -43,7 +43,7 @@ public class Writer {
 			
 				//If difference in reader and writer is greater than maxJobSize - block
 				if (queueCount.difference() > maxJobSize){
-					sleep(10);
+					sleep(1);
 				}else{
 					
 					Job job = new Job (UUID.randomUUID(), issuers.get(new Double(Math.random() * issuers.size()).intValue()) + "-" + System.currentTimeMillis());
@@ -53,7 +53,7 @@ public class Writer {
 					logger.info("Job " + job.getId() + " added in location " + queueCount.getWriterCount() % maxQueueSize);
 					dao.updateWriterCount(queueCount.getWriterCount() + 1);
 					
-					sleepRandom();
+					//sleepRandom();
 				}
 			}
 		}

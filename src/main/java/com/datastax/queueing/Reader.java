@@ -39,7 +39,7 @@ public class Reader {
 				logger.info("Processing Job " + job.getId() + " from location " + queueCounts.getReaderCount() % maxQueueSize);
 				
 				//Process the job.
-				sleep(10);
+				//sleep(10);
 				dao.updateReaderCount(queueCounts.getReaderCount() + 1);
 			}else{			
 				//If nothing in queue, sleep
