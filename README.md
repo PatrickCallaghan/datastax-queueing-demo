@@ -5,7 +5,7 @@ NOTE - this example requires DataStax Enterprise > 4.5.0 or Cassandra > 2.0.5 an
 
 ## Scenario
 
-This demo shows how to create a queueing system in DataStax Enterprise or with leveled compaction in Cassandara. This demo utilises the in-memory feature in DSE to provide a set amount of space for the queue on the heap. 
+This demo shows how to create a queueing system in DataStax Enterprise or with leveled compaction in Cassandra. This demo utilises the in-memory feature in DSE to provide a set amount of space for the queue on the heap. 
 
 The queueing system is based around a circular buffer and is currently single threaded only. There is 2 separate main classes, the Writer and Reader. The default settings are that there are 1000 locations in the buffer. The max no of jobs in the queue at any time is 500.
 So if the Writer has written 500 more jobs than the reader has read, the writer will be blocked until the reader finishes the current job. Similarly, if the reader catches up with the writer, the reader will wait until some more jobs have been written.
