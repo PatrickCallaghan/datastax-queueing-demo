@@ -1,6 +1,5 @@
 package com.datastax.queue.dao;
 
-import com.datastax.model.Job;
 
 public class QueueCounts {
 	private int readerCount = 0;

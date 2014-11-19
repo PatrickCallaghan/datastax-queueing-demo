@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import com.datastax.demo.utils.PropertyHelper;
 import com.datastax.demo.utils.Timer;
 import com.datastax.model.Job;
-import com.datastax.queue.dao.QueueCounts;
-import com.datastax.queue.dao.QueueDao;
 
 public class Reader {
 
@@ -16,12 +14,13 @@ public class Reader {
 	public Reader() {
 
 		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
-		String jobsStr = PropertyHelper.getProperty("jobs", "1000000");
+		String maxJobSizeStr = PropertyHelper.getProperty("maxJobSize", "500");
 		String maxQueueSizeStr = PropertyHelper.getProperty("maxQueueSize", "1000");
-
-		QueueDao dao = new QueueDao(contactPointsStr.split(","));
+		
 		int maxQueueSize = Integer.parseInt(maxQueueSizeStr);
-		int jobsSize = Integer.parseInt(jobsStr);
+		int maxJobSize = Integer.parseInt(maxJobSizeStr);
+		
+		CassandraQueue queue = new CassandraQueue(contactPointsStr.split(","), maxQueueSize, maxJobSize);
 		
 		Timer timer = new Timer();
 		logger.info("Starting Queue Reader");
@@ -31,24 +30,10 @@ public class Reader {
 		while (finished){
 			
 			//Read Counter
-			QueueCounts queueCounts = dao.getQueueCounts();
-			
-			if (queueCounts.difference() > 0){
-				//Read Test Job
-				Job job = dao.getJobFromQueue(queueCounts.getReaderCount() % maxQueueSize);				
-				logger.info("Processing Job " + job.getId() + " from location " + queueCounts.getReaderCount() % maxQueueSize);
-				
-				//Process the job.
-				//sleep(10);
-				dao.updateReaderCount(queueCounts.getReaderCount() + 1);
-			}else{			
-				//If nothing in queue, sleep
-				logger.info("Waiting");
-				sleep(50);
-			}
-			
-			if (queueCounts.getReaderCount()==jobsSize){
-				finished = true;
+			Job job = queue.poll();
+			if (job != null){
+				logger.info("Processing Job " + job.getId() + " from location " + queue.getReaderLocation());
+				queue.removeRead();
 			}
 		}
 		timer.end();

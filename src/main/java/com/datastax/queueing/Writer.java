@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.datastax.demo.utils.PropertyHelper;
 import com.datastax.demo.utils.Timer;
 import com.datastax.model.Job;
-import com.datastax.queue.dao.QueueCounts;
-import com.datastax.queue.dao.QueueDao;
 
 public class Writer {
 
@@ -22,9 +20,7 @@ public class Writer {
 		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
 		String maxQueueSizeStr = PropertyHelper.getProperty("maxQueueSize", "1000");
 		String maxJobSizeStr = PropertyHelper.getProperty("maxJobSize", "500");
-		String jobsStr = PropertyHelper.getProperty("jobs", "1000000");
-
-		QueueDao dao = new QueueDao(contactPointsStr.split(","));
+		String jobsStr = PropertyHelper.getProperty("jobs", "1000000000");
 
 		int maxQueueSize = Integer.parseInt(maxQueueSizeStr);
 		int maxJobSize = Integer.parseInt(maxJobSizeStr);
@@ -32,37 +28,30 @@ public class Writer {
 
 		Timer timer = new Timer();
 		logger.info("Starting Queue Writer with maxQueueSize: " + maxQueueSize + " and maxJobSize: " + maxJobSize);
-		
+
+		CassandraQueue queue = new CassandraQueue(contactPointsStr.split(","), maxQueueSize, maxJobSize);
+
 		for (int i = 0; i < jobsSize; i++) {
-					
+
 			boolean space = true;
-			
-			while (space==true){
-				//Read the queue sizes
-				QueueCounts queueCount = dao.getQueueCounts();
-			
-				//If difference in reader and writer is greater than maxJobSize - block
-				if (queueCount.difference() > maxJobSize){
+
+			while (space == true) {
+
+				Job job = new Job(UUID.randomUUID(), issuers.get(new Double(Math.random() * issuers.size()).intValue())
+						+ "-" + System.currentTimeMillis());
+
+				// Block if job can't be added
+				while (!queue.offer(job)) {
 					sleep(1);
-				}else{
-					
-					Job job = new Job (UUID.randomUUID(), issuers.get(new Double(Math.random() * issuers.size()).intValue()) + "-" + System.currentTimeMillis());
-					
-					//add new task
-					dao.insertJob(queueCount.getWriterCount() % maxQueueSize, job.getId(), job.getTask());					
-					logger.info("Job " + job.getId() + " added in location " + queueCount.getWriterCount() % maxQueueSize);
-					dao.updateWriterCount(queueCount.getWriterCount() + 1);
-					
-					//sleepRandom();
 				}
+
+				logger.info("Job " + job.getId() + " added in location " + queue.getWriterLocation());
+
+				queue.removeWritten();
 			}
 		}
 
 		timer.end();
-	}
-
-	private void sleepRandom() {
-		sleep(new Double(Math.random() * 20).intValue());
 	}
 
 	private void sleep(int i) {
