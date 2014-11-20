@@ -3,6 +3,8 @@ Queueing Demo
 
 NOTE - this example requires DataStax Enterprise > 4.5.0 or Cassandra > 2.0.5 and the cassandra-driver-core version > 2.0.2
 
+NOTE - Cassandra/DSE is not a natural fit for a queueing system, my recommendation would be use Kafka or MQ. As lots of people have tried to implement queueing in Cassandra/DSE I though I would show a version that creates no tombstones so it is relatively safe to us. Another thing to note that this is single threader so works more like the disruptor in a way.
+
 ## Scenario
 
 This demo shows how to create a queueing system in DataStax Enterprise or with leveled compaction in Cassandra. This demo utilises the in-memory feature in DSE to provide a set amount of space for the queue on the heap. 
